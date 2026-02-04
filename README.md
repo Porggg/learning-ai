@@ -4,7 +4,7 @@
 
 This repository documents my journey learning Artificial Intelligence step by step. The goal is to build everything from scratch to truly understand how AI works under the hood, before moving to frameworks like PyTorch or TensorFlow.
 
-![Alt text](images/ai_domains.png)
+![Alt text](images/ai_domains.png)  
 I will start with deep learning, especially neural networks, in supervised learning.
 
 ## Topics
