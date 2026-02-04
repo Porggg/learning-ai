@@ -1,4 +1,4 @@
-# Neural Networks from Scratch
+# Neural Networks from scratch
 
 Learning neural networks by building everything from scratch to understand how they work under the hood.
 
@@ -14,4 +14,4 @@ A minimal neural network with just 2 neurons (1 input, 1 output) learning a simp
 
 ### 2. Three Neurons Network (`3_neurons_learning.py`)
 
-Expanding to 2 neurons architecture with a hidden layer.
+Expanding the 2 neurons architecture with a hidden layer.
