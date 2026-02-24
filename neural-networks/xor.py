@@ -34,17 +34,17 @@ def forward(x1, x2, w11, w12, w21, w22, w31, w32, b1, b2, b3):
 def loss_i(predicted, expected):
     return (predicted - expected) ** 2
 
-def loss(x1, x2, w11, w12, w21, w22, w31, w32, b1, b2, b3):
+def loss(w11, w12, w21, w22, w31, w32, b1, b2, b3):
     """function to minimize
        here it is the Mean Squared Error
     """
     sum_of_error = 0
     for i in range(len(X)):
-        sum_of_error += loss_i(forward(X[i][0], X[i][1], x1, x2, w11, w12, w21, w22, w31, w32, b1, b2, b3)['y'], Y[i])
+        sum_of_error += loss_i(forward(X[i][0], X[i][1], w11, w12, w21, w22, w31, w32, b1, b2, b3)['y'], Y[i])
 
     return (1/len(Y)) * sum_of_error
 
-def backward(x1, x2, y_true, z1, h1, z2, h2, z3, y_pred, w31, w32):
+def backward(x1, x2, y_true, h1, h2, y_pred, w31, w32):
     delta3 = 2*(y_pred - y_true)*y_pred*(1-y_pred)
     dw31 = delta3*h1
     dw32 = delta3*h2
@@ -62,4 +62,30 @@ def backward(x1, x2, y_true, z1, h1, z2, h2, z3, y_pred, w31, w32):
     return dw11, dw12, dw21, dw22, dw31, dw32, db1, db2, db3
 
 def train(nb_epoch, lr):
-    return 
+    # init the weights and biases
+    w11, w12, w21, w22, w31, w32, b1, b2, b3 = [random.uniform(-1, 1) for _ in range(9)]
+    loss_history = []
+    
+    for i in range(nb_epoch):
+        for j in range(len(X)):
+            loss_history.append(loss(w11, w12, w21, w22, w31, w32, b1, b2, b3))
+            f = forward(X[j][0], X[j][1], w11, w12, w21, w22, w31, w32, b1, b2, b3)
+            dw11, dw12, dw21, dw22, dw31, dw32, db1, db2, db3 = backward(X[j][0], X[j][1], Y[j], f['h1'], f['h2'], f['y'], w31, w32)
+
+            # update the params 
+            w11 = w11 - lr * dw11
+            w12 = w12 - lr * dw12
+            w21 = w21 - lr * dw21
+            w22 = w22 - lr * dw22
+            w31 = w31 - lr * dw31
+            w32 = w32 - lr * dw32
+            b1 = b1 - lr * db1
+            b2 = b2 - lr * db2
+            b3 = b3 - lr * db3
+
+    return w11, w12, w21, w22, w31, w32, b1, b2, b3
+
+pred = train(2000, 0.8)
+
+for j in range(len(X)):
+    print("The model predicted ", forward(X[j][0], X[j][1], *pred)['y'], " for the input ", X[j], ". Attendu : ", Y[j])
