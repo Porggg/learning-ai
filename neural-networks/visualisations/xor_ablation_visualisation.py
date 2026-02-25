@@ -1,5 +1,8 @@
 import random
 from math import exp
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 X = [
     (0, 0),
@@ -62,14 +65,12 @@ def backward(x1, x2, y_true, h1, h2, y_pred, w31, w32):
     return dw11, dw12, dw21, dw22, dw31, dw32, db1, db2, db3
 
 def train(nb_epoch, lr):
+    random.seed(42)  # Fix seed for same initialization across all trainings
     # init the weights and biases
-    random.seed(42)
     w11, w12, w21, w22, w31, w32, b1, b2, b3 = [random.uniform(-1, 1) for _ in range(9)]
-    loss_history = []
     
     for i in range(nb_epoch):
         for j in range(len(X)):
-            loss_history.append(loss(w11, w12, w21, w22, w31, w32, b1, b2, b3))
             f = forward(X[j][0], X[j][1], w11, w12, w21, w22, w31, w32, b1, b2, b3)
             dw11, dw12, dw21, dw22, dw31, dw32, db1, db2, db3 = backward(X[j][0], X[j][1], Y[j], f['h1'], f['h2'], f['y'], w31, w32)
 
@@ -84,10 +85,35 @@ def train(nb_epoch, lr):
             b2 = b2 - lr * db2
             b3 = b3 - lr * db3
 
-    return w11, w12, w21, w22, w31, w32, b1, b2, b3
+    final_loss = loss(w11, w12, w21, w22, w31, w32, b1, b2, b3)
+    return final_loss
 
-pred = train(1000, 0.1)
+# Define ranges
+nb_epochs_list = np.arange(100, 10001, 100)  # 100, 200, 300, ..., 10000 (100 values)
+lr_list = np.arange(0.1, 1.01, 0.02)  # 0.1, 0.12, ..., 1.0 (46 values)
 
-for j in range(len(X)):
-    print("The model predicted ", forward(X[j][0], X[j][1], *pred)['y'], " for the input ", X[j], ". Attendu : ", Y[j])
-print("Final loss :", loss(*pred))
+# Initialize loss matrix
+losses = np.zeros((len(nb_epochs_list), len(lr_list)))
+
+# Compute losses
+for i, nb_epoch in enumerate(nb_epochs_list):
+    for j, lr_val in enumerate(lr_list):
+        losses[i, j] = train(nb_epoch, lr_val)
+        print(f"Epochs: {nb_epoch}, LR: {lr_val:.2f}, Loss: {losses[i, j]:.6f}")
+
+# Plot 3D surface
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+X_mesh, Y_mesh = np.meshgrid(lr_list, nb_epochs_list)
+surf = ax.plot_surface(X_mesh, Y_mesh, losses, cmap='viridis', edgecolor='none')
+
+ax.set_xlabel('Learning Rate')
+ax.set_ylabel('Number of Epochs')
+ax.set_zlabel('Final Loss')
+ax.set_title('3D Surface of Final Loss vs Learning Rate and Number of Epochs')
+
+# Add colorbar
+fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5, label='Final Loss')
+
+plt.show()
