@@ -68,6 +68,7 @@ def train(nb_epoch, lr):
     loss_history = []
     
     for i in range(nb_epoch):
+        # it's a stochastic gradient descent of batch size 1 (on-line learning)
         for j in range(len(X)):
             loss_history.append(loss(w11, w12, w21, w22, w31, w32, b1, b2, b3))
             f = forward(X[j][0], X[j][1], w11, w12, w21, w22, w31, w32, b1, b2, b3)
