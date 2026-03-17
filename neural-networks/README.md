@@ -22,4 +22,4 @@ A 5 neurons network learning the XOR table. A on-line learning have been used (s
 
 ### MNIST 
 
-The famous 3 layers neural network for handwrite digits recognition.
+The famous 3 layers neural network for handwrite digits recognition, made from scratch.
