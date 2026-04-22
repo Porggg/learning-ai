@@ -27,11 +27,37 @@ class Network(object):
 
         return output
     
-    def SGD(self, lr, batch_size, epoch_nb):
-        for i in range(epoch_nb):
-            pass
-        return 
+    def backprop(self, x, y):
+        # not implemented for now
+        return [0 for _ in range(len(self.biases))], [0 for _ in range(len(self.weights))]
 
+    def SGD(self, lr, batch_size, epoch_nb, training_data):
+        n_training = len(training_data)
+
+        history = [(self.biases, self.weights)]
+        # last batch can be smaller than the others
+        for i in range(epoch_nb):
+            np.random.shuffle(training_data)
+            batches = [training_data[k:k+batch_size] for k in range(0, n_training, batch_size)]
+            for batch in batches:
+                # update biases and weigth using formula (20) and (21)
+                
+                # conpute the sum of derivative for each w and b 
+                for x, y in batch:
+                    grad_b, grad_w = self.backprop(x, y)
+
+                for b, i in zip(self.biases, range(len(self.biases))):
+                    self.biases[i] = b - (lr / len(batch)) * grad_b[i]
+                
+                for w, i in zip(self.weights, range(len(self.weights))):
+                    self.weights[i] = w - (lr / len(batch)) * grad_w[i]
+
+                history.append((self.biases, self.weights))
+
+            print("Epoch ", i, "/", epoch_nb, " done.")
+
+        return history
+    
 n = Network([2, 3, 4])
 
 print(f"Number of layers: {n.num_layers}")
@@ -42,5 +68,8 @@ for i, b in enumerate(n.biases):
 print("\nWeights:")
 for i, w in enumerate(n.weights):
     print(f"  Layer {i+1}:\n{w}")
+print("")
 
 result = n.feedforward(np.array([[0.5],[-1.2]]))
+
+n.SGD(0.3, 20, 20, [])
