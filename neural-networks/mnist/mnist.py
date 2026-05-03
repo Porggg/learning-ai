@@ -6,6 +6,18 @@ def mse(w, b):
 def sigmoid(z):
     return 1/(1+np.exp(-z))
 
+def sigmoid_prime(z):
+    return sigmoid(z)*(1-sigmoid(z))
+
+def hadamard_product(a, b):
+    if len(a) != len(b):
+        raise ValueError(f"The two arrays should be of same size for Hadamard Product, got {len(a)} and {len(b)}")
+
+    return [x * y for x, y in zip(a, b)]
+
+def grad_cost(activation, y):
+    return []
+
 class Network(object):
 
     def __init__(self, sizes):
@@ -28,7 +40,27 @@ class Network(object):
         return output
     
     def backprop(self, x, y):
+        weighted_input = []
+        activations = [x]
+
+        output = x
+        for i in range(0, self.num_layers - 1):
+            z_temp = self.weights[i] @ output + self.biases[i]
+            a_temp = sigmoid(z_temp)
+            weighted_input.append(z_temp)
+            activations.append(a_temp)
+            output = a_temp
+
+        print(weighted_input, len(weighted_input))
+        print(activations, len(activations))
+
+        # compute the error in last layer
+        delta_L = hadamard_product(grad_cost(activations[-1, y]), sigmoid_prime(weighted_input[-1]))
+        
+        # backpropagation of the errors
         # not implemented for now
+        delta = []
+        
         return [0 for _ in range(len(self.biases))], [0 for _ in range(len(self.weights))]
 
     def SGD(self, lr, batch_size, epoch_nb, training_data):
@@ -72,4 +104,4 @@ print("")
 
 result = n.feedforward(np.array([[0.5],[-1.2]]))
 
-n.SGD(0.3, 20, 20, [])
+n.backprop(np.array([[0.5],[-1.2]]), 0.5)
