@@ -2,3 +2,5 @@ venv/
 neural-networks-and-deep-learning/
 .vscode/
 neural-networks/html/
+.DS_Store
+neural-networks/.DS_Store

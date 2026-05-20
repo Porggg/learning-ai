@@ -1,5 +1,8 @@
 import numpy as np
 
+SEED = 42
+np.random.seed(SEED)
+
 def mse(w, b):
     return
 
@@ -77,10 +80,10 @@ class Network(object):
                     sum_grad_w = [nw+dnw for nw, dnw in zip(sum_grad_w, grad_w)]
 
                 for b, j in zip(self.biases, range(len(self.biases))):
-                    self.biases[j] = b - (lr / len(batch)) * grad_b[j]
+                    self.biases[j] = b - (lr / len(batch)) * sum_grad_b[j]
                 
                 for w, k in zip(self.weights, range(len(self.weights))):
-                    self.weights[k] = w - (lr / len(batch)) * grad_w[k]
+                    self.weights[k] = w - (lr / len(batch)) * sum_grad_w[k]
 
                 history.append((self.biases, self.weights))
 
